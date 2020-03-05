@@ -77,4 +77,23 @@ describe('watch-colletion', () => {
       })
     })
   })
+
+  describe('toArray', () => {
+    it('lists all entries in an array', () => {
+      const bob = { name: 'Bob', age: 26 }
+      const bill = { name: 'bill', age: 17 }
+      const betty = { name: 'Betty', age: 56 }
+      const users = watchCollection({
+        bill,
+        bob,
+        betty,
+      })
+
+      let userArray = users.toArray()
+
+      expect(userArray).toContain(bob)
+      expect(userArray).toContain(bill)
+      expect(userArray).toContain(betty)
+    })
+  })
 })

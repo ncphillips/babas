@@ -27,6 +27,9 @@ export function watchCollection<T>(
         cb()
       })
     },
+    toArray(): T[] {
+      return Object.keys(watchableCollection).map(id => watchableCollection[id])
+    },
   }
 
   let watchableCollection = new Proxy<Collection<T> & Sub<T>>(
@@ -71,9 +74,7 @@ export interface Sub<T> {
     subscription?: Subscription<T>
   ): Unsubscribe
   unsubscribe(cb: SubscriptionCallback<T>): void
-  add(id: string, item: T): T
-  remove(id: string): T | undefined
-  find(id: string): T | undefined
+  toArray(): T[]
 }
 
 // @ts-ignore
