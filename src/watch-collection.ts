@@ -9,48 +9,43 @@ export function watchCollection<T extends Indexed>(
     cb: SubscriptionCallback<T>;
   }[] = [];
 
-  function subscribe(cb: SubscriptionCallback<T>) {
-    subscribers.push({
-      cb,
-    });
+  const collectionMethods: { [key: string]: any } = {
+    subscribe(cb: SubscriptionCallback<T>) {
+      subscribers.push({
+        cb,
+      });
 
-    return () => unsubscribe(cb);
-  }
+      return () => collectionMethods.unsubscribe(cb);
+    },
 
-  function unsubscribe(removeCB: SubscriptionCallback<T>) {
-    const index = subscribers.findIndex(({ cb }) => cb === removeCB);
-    subscribers.splice(index, 1);
-  }
-
-  function notifyChange() {
-    subscribers.forEach(({ cb }) => {
-      cb();
-    });
-  }
+    unsubscribe(removeCB: SubscriptionCallback<T>) {
+      const index = subscribers.findIndex(({ cb }) => cb === removeCB);
+      subscribers.splice(index, 1);
+    },
+    add(item: T) {
+      return (watchableCollection[item.id] = item);
+    },
+    remove(item: T) {
+      delete watchableCollection[item.id];
+    },
+    find(name: string) {
+      return watchableCollection[name];
+    },
+    notifyChange() {
+      subscribers.forEach(({ cb }) => {
+        cb();
+      });
+    },
+  };
 
   let watchableCollection = new Proxy<Collection<T> & Sub<T>>(
     collection as Collection<T> & Sub<T>,
     {
       get: function(obj, prop: string) {
-        if (prop === 'subscribe') {
-          return subscribe;
-        }
-        if (prop === 'unsubscribe') {
-          return unsubscribe;
-        }
+        const action = collectionMethods[prop];
 
-        if (prop === 'add') {
-          return (item: T) => {
-            watchableCollection[item.id] = item;
-          };
-        }
-
-        if (prop === 'remove') {
-          return (item: T) => delete watchableCollection[item.id];
-        }
-
-        if (prop === 'find') {
-          return (name: string) => watchableCollection[name];
+        if (action) {
+          return action;
         }
 
         return obj[prop];
@@ -62,7 +57,7 @@ export function watchCollection<T extends Indexed>(
 
         obj[prop] = value;
 
-        notifyChange();
+        collectionMethods.notifyChange();
         return true;
       },
       deleteProperty: function(obj, prop: string) {
@@ -71,7 +66,7 @@ export function watchCollection<T extends Indexed>(
         }
 
         delete obj[prop];
-        notifyChange();
+        collectionMethods.notifyChange();
         return true;
       },
     }
