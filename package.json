@@ -28,6 +28,13 @@
   "name": "babas",
   "author": "Nolan Phillips",
   "module": "dist/babas.esm.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ncphillips/babas.git"
+  },
+  "bugs": {
+    "url": "https://github.com/ncphillips/babas/issues"
+  },
   "devDependencies": {
     "@types/jest": "^25.1.3",
     "husky": "^4.2.3",
