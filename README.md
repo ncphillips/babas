@@ -42,13 +42,14 @@ const unsubscribe = users.subscribe(() => {
 
 user.add({ id: 'bill', name: 'Bill', age: 30 }); //  The guest list has changed.
 user['polly'] = { id: 'polly', name: 'Polly', age: 54 }; //  The guest list has changed.
-user.janet = { id: 'janet', name: 'Janet', age: 23 };
 
+delete users['bill']; //  The guest list has changed.
 users.remove(bob); //  The guest list has changed.
 
 unsubscribe();
+
 delete users.polly;
-delete users['bill'];
+user.janet = { id: 'janet', name: 'Janet', age: 23 };
 ```
 
 ## Local Development

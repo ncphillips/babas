@@ -14,6 +14,15 @@ describe('watch-colletion', () => {
 
     expect(users.bob).toBe(bob);
   });
+  describe('Object.keys(collection)', () => {
+    it('excludes collection methods', () => {
+      const bob = { id: 'bob', name: 'Bob ' };
+
+      const ids = Object.keys(watchCollection({ bob }));
+
+      expect(ids).toEqual([bob.id]);
+    });
+  });
   describe('adding entries', () => {
     let cb = jest.fn();
     let bob = { id: 'bob', name: 'Bob', age: 25 };
