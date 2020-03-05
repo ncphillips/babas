@@ -6,6 +6,25 @@ A tiny library for watching objects.
 
 ### `watch`
 
+**Watching all Values**
+
+By default all values are watched:
+
+```js
+import { watch } from 'babas';
+
+const user = watch({ name: 'Bob', age: 25 });
+
+user.subscribe(user => {
+  console.log('User updated');
+});
+```
+
+**Watching Specific Values**
+
+A `subscription` object can be passed as the second argument to restrict
+which properties should be watched.
+
 ```js
 import { watch } from 'babas';
 
@@ -26,7 +45,7 @@ user.age = 26; // Happy Birthday Bill, you're 26 years old!
 ### `watchCollection`
 
 ```js
-import { watch } from 'babas';
+import { watchCollection } from 'babas';
 
 const bob = {
   id: 'bob',
@@ -35,21 +54,34 @@ const bob = {
 };
 
 const users = watchCollection({ bob });
+```
 
+**Subscribing**
+
+```js
 const unsubscribe = users.subscribe(() => {
   console.log(`The guest list has changed.`);
 });
+```
 
-user.add({ id: 'bill', name: 'Bill', age: 30 }); //  The guest list has changed.
-user['polly'] = { id: 'polly', name: 'Polly', age: 54 }; //  The guest list has changed.
+**Adding Entries**
 
-delete users['bill']; //  The guest list has changed.
-users.remove(bob); //  The guest list has changed.
+There are 3 ways to add entries:
 
-unsubscribe();
-
-delete users.polly;
+```js
+user.add({ id: 'bill', name: 'Bill', age: 30 });
 user.janet = { id: 'janet', name: 'Janet', age: 23 };
+user['polly'] = { id: 'polly', name: 'Polly', age: 54 };
+```
+
+**Removing Entries**
+
+There are 3 ways to remove entries:
+
+```js
+users.remove(bob);
+delete users.polly;
+delete users['bill'];
 ```
 
 ## Local Development
@@ -79,3 +111,7 @@ By default, runs tests related to files changed since the last commit.
 ## Thanks
 
 This project was bootstrapped with [TSDX](https://github.com/jaredpalmer/tsdx).
+
+```
+
+```
