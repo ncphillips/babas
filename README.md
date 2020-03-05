@@ -2,6 +2,27 @@
 
 A tiny library for watching objects.
 
+## How to Use
+
+### `watch`
+
+```js
+import { watch } from 'babas';
+
+const user = watch({ name: 'Bob', age: 25 });
+
+user.subscribe(
+  user => {
+    console.log(`Happy Birthday ${user.name}, you're ${user.age} years old!`);
+  },
+  { age: true }
+);
+
+user.name = 'Bill';
+
+user.age = 26; // Happy Birthday Bill, you're 26 years old!
+```
+
 ## Local Development
 
 Below is a list of commands you will probably find useful.
