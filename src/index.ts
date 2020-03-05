@@ -1,2 +1,2 @@
-export * from './watch';
-export { watchCollection } from './watch-collection';
+export * from './watch'
+export { watchCollection } from './watch-collection'
