@@ -2,7 +2,7 @@ interface Collection<T> {
   [key: string]: T
 }
 
-export function watchCollection<T extends Indexed>(
+export function watchCollection<T>(
   collection: Collection<T> = {}
 ): Collection<T> & Sub<T> {
   const subscribers: {
@@ -22,14 +22,14 @@ export function watchCollection<T extends Indexed>(
       const index = subscribers.findIndex(({ cb }) => cb === removeCB)
       subscribers.splice(index, 1)
     },
-    add(item: T) {
-      return (watchableCollection[item.id] = item)
+    add(id: string, item: T) {
+      return (watchableCollection[id] = item)
     },
-    remove(item: T) {
-      delete watchableCollection[item.id]
+    remove(id: string) {
+      delete watchableCollection[id]
     },
-    find(name: string) {
-      return watchableCollection[name]
+    find(id: string) {
+      return watchableCollection[id]
     },
     notifyChange() {
       subscribers.forEach(({ cb }) => {
@@ -74,19 +74,15 @@ export function watchCollection<T extends Indexed>(
   return watchableCollection
 }
 
-interface Indexed {
-  id: string
-}
-
-export interface Sub<T extends Indexed> {
+export interface Sub<T> {
   subscribe(
     cb: SubscriptionCallback<T>,
     subscription?: Subscription<T>
   ): Unsubscribe
   unsubscribe(cb: SubscriptionCallback<T>): void
-  add(item: T): T
-  remove(item: T): T | undefined
-  find(name: string): T | undefined
+  add(id: string, item: T): T
+  remove(id: string): T | undefined
+  find(id: string): T | undefined
 }
 
 // @ts-ignore
