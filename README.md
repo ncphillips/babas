@@ -1,3 +1,5 @@
+![code style: prettier](https://img.shields.io/badge/code_style-prettier-ff69b4.svg?style=flat-square)
+
 # babas
 
 A tiny library for watching objects.
@@ -11,13 +13,13 @@ A tiny library for watching objects.
 By default all values are watched:
 
 ```js
-import { watch } from 'babas';
+import { watch } from 'babas'
 
-const user = watch({ name: 'Bob', age: 25 });
+const user = watch({ name: 'Bob', age: 25 })
 
 user.subscribe(user => {
-  console.log('User updated');
-});
+  console.log('User updated')
+})
 ```
 
 **Watching Specific Values**
@@ -26,42 +28,42 @@ A `subscription` object can be passed as the second argument to restrict
 which properties should be watched.
 
 ```js
-import { watch } from 'babas';
+import { watch } from 'babas'
 
-const user = watch({ name: 'Bob', age: 25 });
+const user = watch({ name: 'Bob', age: 25 })
 
 user.subscribe(
   user => {
-    console.log(`Happy Birthday ${user.name}, you're ${user.age} years old!`);
+    console.log(`Happy Birthday ${user.name}, you're ${user.age} years old!`)
   },
   { age: true }
-);
+)
 
-user.name = 'Bill';
+user.name = 'Bill'
 
-user.age = 26; // Happy Birthday Bill, you're 26 years old!
+user.age = 26 // Happy Birthday Bill, you're 26 years old!
 ```
 
 ### `watchCollection`
 
 ```js
-import { watchCollection } from 'babas';
+import { watchCollection } from 'babas'
 
 const bob = {
   id: 'bob',
   name: 'Bob',
   age: 25,
-};
+}
 
-const users = watchCollection({ bob });
+const users = watchCollection({ bob })
 ```
 
 **Subscribing**
 
 ```js
 const unsubscribe = users.subscribe(() => {
-  console.log(`The guest list has changed.`);
-});
+  console.log(`The guest list has changed.`)
+})
 ```
 
 **Adding Entries**
@@ -69,9 +71,9 @@ const unsubscribe = users.subscribe(() => {
 There are 3 ways to add entries:
 
 ```js
-user.add({ id: 'bill', name: 'Bill', age: 30 });
-user.janet = { id: 'janet', name: 'Janet', age: 23 };
-user['polly'] = { id: 'polly', name: 'Polly', age: 54 };
+user.add({ id: 'bill', name: 'Bill', age: 30 })
+user.janet = { id: 'janet', name: 'Janet', age: 23 }
+user['polly'] = { id: 'polly', name: 'Polly', age: 54 }
 ```
 
 **Removing Entries**
@@ -79,9 +81,9 @@ user['polly'] = { id: 'polly', name: 'Polly', age: 54 };
 There are 3 ways to remove entries:
 
 ```js
-users.remove(bob);
-delete users.polly;
-delete users['bill'];
+users.remove(bob)
+delete users.polly
+delete users['bill']
 ```
 
 ## Local Development
