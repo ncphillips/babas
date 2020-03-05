@@ -23,6 +23,34 @@ user.name = 'Bill';
 user.age = 26; // Happy Birthday Bill, you're 26 years old!
 ```
 
+### `watchCollection`
+
+```js
+import { watch } from 'babas';
+
+const bob = {
+  id: 'bob',
+  name: 'Bob',
+  age: 25,
+};
+
+const users = watchCollection({ bob });
+
+const unsubscribe = users.subscribe(() => {
+  console.log(`The guest list has changed.`);
+});
+
+user.add({ id: 'bill', name: 'Bill', age: 30 }); //  The guest list has changed.
+user['polly'] = { id: 'polly', name: 'Polly', age: 54 }; //  The guest list has changed.
+user.janet = { id: 'janet', name: 'Janet', age: 23 };
+
+users.remove(bob); //  The guest list has changed.
+
+unsubscribe();
+delete users.polly;
+delete users['bill'];
+```
+
 ## Local Development
 
 Below is a list of commands you will probably find useful.
