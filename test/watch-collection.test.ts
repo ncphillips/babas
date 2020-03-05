@@ -33,23 +33,6 @@ describe('watch-colletion', () => {
       users = watchCollection<User>()
     })
 
-    describe('using collection.add(entry)', () => {
-      it('calls subscriber', () => {
-        users.subscribe(cb)
-
-        users.add('bob', bob)
-
-        expect(cb).toHaveBeenCalled()
-      })
-
-      it('adds the entry to the collection', () => {
-        users.add('bob', bob)
-
-        expect(users.bob).toBe(bob)
-        expect(users['bob']).toBe(bob)
-      })
-    })
-
     describe('using collection[id] = entry', () => {
       it('calls subscriber', () => {
         users.subscribe(cb)
@@ -76,22 +59,6 @@ describe('watch-colletion', () => {
       cb = jest.fn()
       bob = { name: 'Bob', age: 25 }
       users = watchCollection<User>({ bob })
-    })
-
-    describe('using collection.remove(id)', () => {
-      it('calls subscriber', () => {
-        users.subscribe(cb)
-
-        users.remove('bob')
-
-        expect(cb).toHaveBeenCalled()
-      })
-      it('removes the entry', () => {
-        users.remove('bob')
-
-        expect(users.bob).toBeUndefined()
-        expect(users['bob']).toBeUndefined()
-      })
     })
 
     describe('useing delete collection[id]', () => {

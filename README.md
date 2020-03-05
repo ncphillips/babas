@@ -50,7 +50,6 @@ user.age = 26 // Happy Birthday Bill, you're 26 years old!
 import { watchCollection } from 'babas'
 
 const bob = {
-  id: 'bob',
   name: 'Bob',
   age: 25,
 }
@@ -71,17 +70,15 @@ const unsubscribe = users.subscribe(() => {
 There are 3 ways to add entries:
 
 ```js
-user.add({ id: 'bill', name: 'Bill', age: 30 })
-user.janet = { id: 'janet', name: 'Janet', age: 23 }
-user['polly'] = { id: 'polly', name: 'Polly', age: 54 }
+user.janet = { name: 'Janet', age: 23 }
+user['polly'] = { name: 'Polly', age: 54 }
 ```
 
 **Removing Entries**
 
-There are 3 ways to remove entries:
+There are 2 ways to remove entries:
 
 ```js
-users.remove(bob)
 delete users.polly
 delete users['bill']
 ```

@@ -22,15 +22,6 @@ export function watchCollection<T>(
       const index = subscribers.findIndex(({ cb }) => cb === removeCB)
       subscribers.splice(index, 1)
     },
-    add(id: string, item: T) {
-      return (watchableCollection[id] = item)
-    },
-    remove(id: string) {
-      delete watchableCollection[id]
-    },
-    find(id: string) {
-      return watchableCollection[id]
-    },
     notifyChange() {
       subscribers.forEach(({ cb }) => {
         cb()
