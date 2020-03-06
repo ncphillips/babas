@@ -13,6 +13,25 @@ describe('watch-colletion', () => {
 
     expect(users.bob).toBe(bob)
   })
+
+  it('accepts additional methods', () => {
+    const bob = { id: 'test', name: 'Bob', age: 25 }
+
+    type UserWithId = User & { id: string }
+    interface Methods {
+      add(entry: UserWithId): UserWithId
+    }
+    const users = createCollection<UserWithId, Methods>(
+      { bob },
+      collection => ({
+        add(user) {
+          return (collection[user.id] = user)
+        },
+      })
+    )
+
+    expect(users.bob).toBe(bob)
+  })
   describe('Object.keys(collection)', () => {
     it('excludes collection methods', () => {
       const ids = Object.keys(createCollection())
