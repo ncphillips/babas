@@ -15,29 +15,35 @@ describe('watch-colletion', () => {
   })
   describe('Object.keys(collection)', () => {
     it('excludes collection methods', () => {
+      const ids = Object.keys(createCollection())
+
+      expect(ids).not.toContain('subscribe')
+      expect(ids).not.toContain('unsubscribe')
+    })
+    it('includes they keys of the entrie', () => {
       const bob = { name: 'Bob ' }
 
       const ids = Object.keys(createCollection({ bob }))
 
-      expect(ids).toEqual(['bob'])
+      expect(ids).toContain('bob')
     })
   })
   describe('adding entries', () => {
-    let cb = jest.fn()
+    let listener = jest.fn()
     let bob = { name: 'Bob', age: 25 }
     let users = createCollection<User>()
 
     beforeEach(() => {
-      cb = jest.fn()
+      listener = jest.fn()
       bob = { name: 'Bob', age: 25 }
       users = createCollection<User>()
     })
     it('tells the subscriber the change and the entry', () => {
-      users.subscribe(cb)
+      users.subscribe(listener)
 
       users.bob = bob
 
-      expect(cb).toHaveBeenCalledWith(users, {
+      expect(listener).toHaveBeenCalledWith(users, {
         change: 'set',
         id: 'bob',
         entry: bob,
@@ -46,11 +52,11 @@ describe('watch-colletion', () => {
 
     describe('using collection[id] = entry', () => {
       it('calls subscriber', () => {
-        users.subscribe(cb)
+        users.subscribe(listener)
 
         users['bob'] = bob
 
-        expect(cb).toHaveBeenCalled()
+        expect(listener).toHaveBeenCalled()
       })
 
       it('adds the entry to the collection', () => {
@@ -62,23 +68,23 @@ describe('watch-colletion', () => {
     })
   })
   describe('removing entries', () => {
-    let cb = jest.fn()
+    let listener = jest.fn()
     let bob = { name: 'Bob', age: 25 }
     let users = createCollection<User>({ bob })
 
     beforeEach(() => {
-      cb = jest.fn()
+      listener = jest.fn()
       bob = { name: 'Bob', age: 25 }
       users = createCollection<User>({ bob })
     })
 
-    describe('useing delete collection[id]', () => {
-      it('calls subscriber', () => {
-        users.subscribe(cb)
+    describe('using delete collection[id]', () => {
+      it('calls listener', () => {
+        users.subscribe(listener)
 
         delete users['bob']
 
-        expect(cb).toHaveBeenCalled()
+        expect(listener).toHaveBeenCalled()
       })
       it('removes the entry', () => {
         delete users['bob']
@@ -86,12 +92,12 @@ describe('watch-colletion', () => {
         expect(users.bob).toBeUndefined()
         expect(users['bob']).toBeUndefined()
       })
-      it('tells the subscriber the change and the entry', () => {
-        users.subscribe(cb)
+      it('calls the listener with the change', () => {
+        users.subscribe(listener)
 
         delete users['bob']
 
-        expect(cb).toHaveBeenCalledWith(users, {
+        expect(listener).toHaveBeenCalledWith(users, {
           change: 'delete',
           id: 'bob',
           entry: bob,
