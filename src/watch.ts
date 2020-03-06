@@ -42,21 +42,21 @@ export function watch<T extends object>(target: T): Subscribable<T> {
     })
   }
 
+  const subscribableMethods: any = {
+    subscribe,
+    unsubscribe,
+  }
+
   const subscribable = new Proxy<Subscribable<T>>(subscribableTarget, {
     get: function(obj, prop: keyof SubscribeTo<T>) {
-      if (prop === 'subscribe') {
-        return subscribe
-      }
-      if (prop === 'unsubscribe') {
-        return unsubscribe
-      }
+      const action = subscribableMethods[prop]
+      if (action) return action
 
       return obj[prop]
     },
     set: function(obj, prop: keyof SubscribeTo<T>, value) {
-      if (prop === 'subscribe' || prop === 'unsubscribe') {
-        return true
-      }
+      const action = subscribableMethods[prop]
+      if (action) return false
 
       obj[prop] = value
       notifyChangeFor(prop)
