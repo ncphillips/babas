@@ -1,14 +1,17 @@
 import { Unsubscribe } from './subscriptions'
 
-export type Listener<T> = (colletion: Collection<T>, change: Change<T>) => void
+export type CollectionListener<T> = (
+  colletion: Collection<T>,
+  change: Change<T>
+) => void
 
 export interface Entries<T> {
   [key: string]: T | undefined
 }
 
 export interface CollectionMethods<T> {
-  subscribe(listener: Listener<Collection<T>>): Unsubscribe
-  unsubscribe(onUpdate: Listener<Collection<T>>): void
+  subscribe(listener: CollectionListener<Collection<T>>): Unsubscribe
+  unsubscribe(onUpdate: CollectionListener<Collection<T>>): void
   toArray(): T[]
 }
 
@@ -22,11 +25,11 @@ export interface Change<T> {
 
 export function createCollection<T>(entries: Entries<T> = {}): Collection<T> {
   const subscribers: {
-    listener: Listener<T>
+    listener: CollectionListener<T>
   }[] = []
 
   const collectionMethods: { [key: string]: any } = {
-    subscribe(listener: Listener<T>) {
+    subscribe(listener: CollectionListener<T>) {
       subscribers.push({
         listener,
       })
@@ -34,7 +37,7 @@ export function createCollection<T>(entries: Entries<T> = {}): Collection<T> {
       return () => collectionMethods.unsubscribe(listener)
     },
 
-    unsubscribe(listener: Listener<T>) {
+    unsubscribe(listener: CollectionListener<T>) {
       const index = subscribers.findIndex(sub => sub.listener === listener)
 
       subscribers.splice(index, 1)

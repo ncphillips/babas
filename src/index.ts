@@ -1,2 +1,2 @@
 export * from './watch'
-export { createCollection } from './create-collection'
+export * from './create-collection'
