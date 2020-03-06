@@ -1,5 +1,6 @@
 {
   "version": "0.2.0",
+  "standard-version": {},
   "license": "MIT",
   "main": "dist/index.js",
   "typings": "dist/index.d.ts",
@@ -7,6 +8,7 @@
     "dist"
   ],
   "scripts": {
+    "release": "standard-version --no-verify",
     "start": "tsdx watch",
     "build": "tsdx build",
     "test": "tsdx test",
@@ -40,6 +42,7 @@
     "husky": "^4.2.3",
     "prettier": "1.19.1",
     "pretty-quick": "^2.0.1",
+    "standard-version": "^7.1.0",
     "tsdx": "^0.12.3",
     "tslib": "^1.11.1",
     "typescript": "^3.8.3"

@@ -1,4 +1,4 @@
-![code style: prettier](https://img.shields.io/badge/code_style-prettier-ff69b4.svg?style=flat-square)
+[![Build Status](https://img.shields.io/endpoint.svg?url=https%3A%2F%2Factions-badge.atrox.dev%2Fncphillips%2Fbabas%2Fbadge&style=flat)](https://actions-badge.atrox.dev/ncphillips/babas/goto)[![GitHub license](https://img.shields.io/github/license/ncphillips/babas)](https://github.com/ncphillips/babas/blob/master/LICENSE)![code style: prettier](https://img.shields.io/badge/code_style-prettier-ff69b4.svg?style=flat-square)
 
 # babas
 
