@@ -4,9 +4,7 @@
 
 A tiny library for watching objects.
 
-## How to Use
-
-### `watch`
+## `watch`
 
 **Watching all Values**
 
@@ -44,7 +42,7 @@ user.name = 'Bill'
 user.age = 26 // Happy Birthday Bill, you're 26 years old!
 ```
 
-### `createCollection`
+## `createCollection`
 
 ```js
 import { createCollection } from 'babas'
