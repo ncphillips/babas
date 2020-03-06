@@ -15,7 +15,9 @@ export interface CollectionMethods<T> {
   toArray(): T[]
 }
 
-export type Collection<T> = Entries<T> & CollectionMethods<Entries<T>>
+export type Collection<T, M = {}> = Entries<T> &
+  CollectionMethods<Entries<T>> &
+  M
 
 export interface Change<T> {
   id: string
@@ -23,10 +25,56 @@ export interface Change<T> {
   entry: T
 }
 
-export function createCollection<T>(entries: Entries<T> = {}): Collection<T> {
+export function createCollection<T, M = {}>(
+  entries: Entries<T> = {},
+  methods?: (c: Collection<T, M>) => M
+): Collection<T, M> {
   const subscribers: {
     listener: CollectionListener<T>
   }[] = []
+
+  let watchableCollection = new Proxy<Collection<T, M>>(
+    entries as Collection<T, M>,
+    {
+      get: function(obj, prop: string) {
+        const action = collectionMethods[prop]
+
+        if (action) {
+          return action
+        }
+
+        return obj[prop]
+      },
+      set: function(obj, prop: string, value) {
+        const action = collectionMethods[prop]
+
+        if (action) {
+          return false
+        }
+
+        // @ts-ignore it's fine
+        obj[prop] = value
+
+        notifyChange({ change: 'set', entry: value, id: prop })
+        return true
+      },
+      deleteProperty: function(obj, prop: string) {
+        const action = collectionMethods[prop]
+
+        if (action) {
+          return false
+        }
+
+        const entry = obj[prop]
+
+        if (entry) {
+          delete obj[prop]
+          notifyChange({ change: 'delete', entry, id: prop })
+        }
+        return true
+      },
+    }
+  )
 
   const collectionMethods: { [key: string]: any } = {
     subscribe(listener: CollectionListener<T>) {
@@ -48,6 +96,7 @@ export function createCollection<T>(entries: Entries<T> = {}): Collection<T> {
         id => watchableCollection[id]!
       )
     },
+    ...(methods ? methods(watchableCollection) : {}),
   }
 
   function notifyChange(change: Change<T>) {
@@ -56,43 +105,5 @@ export function createCollection<T>(entries: Entries<T> = {}): Collection<T> {
     })
   }
 
-  let watchableCollection = new Proxy<Collection<T>>(entries as Collection<T>, {
-    get: function(obj, prop: string) {
-      const action = collectionMethods[prop]
-
-      if (action) {
-        return action
-      }
-
-      return obj[prop]
-    },
-    set: function(obj, prop: string, value) {
-      const action = collectionMethods[prop]
-
-      if (action) {
-        return false
-      }
-
-      obj[prop] = value
-
-      notifyChange({ change: 'set', entry: value, id: prop })
-      return true
-    },
-    deleteProperty: function(obj, prop: string) {
-      const action = collectionMethods[prop]
-
-      if (action) {
-        return false
-      }
-
-      const entry = obj[prop]
-
-      if (entry) {
-        delete obj[prop]
-        notifyChange({ change: 'delete', entry, id: prop })
-      }
-      return true
-    },
-  })
   return watchableCollection
 }
