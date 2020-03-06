@@ -1,4 +1,6 @@
-import { Unsubscribe, Listener } from './subscriptions'
+import { Unsubscribe } from './subscriptions'
+
+export type Listener<T> = (colletion: Collection<T>, change: Change<T>) => void
 
 export interface Entries<T> {
   [key: string]: T | undefined
@@ -12,28 +14,34 @@ export interface CollectionMethods<T> {
 
 export type Collection<T> = Entries<T> & CollectionMethods<Entries<T>>
 
+export interface Change<T> {
+  id: string
+  change: 'set' | 'delete'
+  entry: T
+}
+
 export function createCollection<T>(entries: Entries<T> = {}): Collection<T> {
   const subscribers: {
-    listener: Listener<Collection<T>>
+    listener: Listener<T>
   }[] = []
 
   const collectionMethods: { [key: string]: any } = {
-    subscribe(listener: Listener<Collection<T>>) {
+    subscribe(listener: Listener<T>) {
       subscribers.push({
-        listener: listener,
+        listener,
       })
 
       return () => collectionMethods.unsubscribe(listener)
     },
 
-    unsubscribe(listener: Listener<Collection<T>>) {
+    unsubscribe(listener: Listener<T>) {
       const index = subscribers.findIndex(sub => sub.listener === listener)
 
       subscribers.splice(index, 1)
     },
-    notifyChange() {
+    notifyChange(change: Change<T>) {
       subscribers.forEach(({ listener }) => {
-        listener(watchableCollection)
+        listener(watchableCollection, change)
       })
     },
     toArray(): T[] {
@@ -62,7 +70,7 @@ export function createCollection<T>(entries: Entries<T> = {}): Collection<T> {
 
       obj[prop] = value
 
-      collectionMethods.notifyChange()
+      collectionMethods.notifyChange({ change: 'set', entry: value, id: prop })
       return true
     },
     deleteProperty: function(obj, prop: string) {
@@ -72,8 +80,9 @@ export function createCollection<T>(entries: Entries<T> = {}): Collection<T> {
         return false
       }
 
+      const entry = obj[prop]
       delete obj[prop]
-      collectionMethods.notifyChange()
+      collectionMethods.notifyChange({ change: 'delete', entry, id: prop })
       return true
     },
   })

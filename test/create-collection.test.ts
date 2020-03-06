@@ -32,6 +32,17 @@ describe('watch-colletion', () => {
       bob = { name: 'Bob', age: 25 }
       users = createCollection<User>()
     })
+    it('tells the subscriber the change and the entry', () => {
+      users.subscribe(cb)
+
+      users.bob = bob
+
+      expect(cb).toHaveBeenCalledWith(users, {
+        change: 'set',
+        id: 'bob',
+        entry: bob,
+      })
+    })
 
     describe('using collection[id] = entry', () => {
       it('calls subscriber', () => {
@@ -74,6 +85,17 @@ describe('watch-colletion', () => {
 
         expect(users.bob).toBeUndefined()
         expect(users['bob']).toBeUndefined()
+      })
+      it('tells the subscriber the change and the entry', () => {
+        users.subscribe(cb)
+
+        delete users['bob']
+
+        expect(cb).toHaveBeenCalledWith(users, {
+          change: 'delete',
+          id: 'bob',
+          entry: bob,
+        })
       })
     })
   })
