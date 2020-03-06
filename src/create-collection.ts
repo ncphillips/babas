@@ -12,7 +12,7 @@ export interface CollectionMethods<T> {
 
 export type Collection<T> = Entries<T> & CollectionMethods<Entries<T>>
 
-export function watchCollection<T>(entries: Entries<T> = {}): Collection<T> {
+export function createCollection<T>(entries: Entries<T> = {}): Collection<T> {
   const subscribers: {
     listener: Listener<Collection<T>>
   }[] = []

@@ -1,4 +1,4 @@
-import { watchCollection } from '../src'
+import { createCollection } from '../src'
 
 interface User {
   name: string
@@ -9,7 +9,7 @@ describe('watch-colletion', () => {
   it('accepts an initial state', () => {
     const bob = { name: 'Bob', age: 25 }
 
-    const users = watchCollection<User>({ bob })
+    const users = createCollection<User>({ bob })
 
     expect(users.bob).toBe(bob)
   })
@@ -17,7 +17,7 @@ describe('watch-colletion', () => {
     it('excludes collection methods', () => {
       const bob = { name: 'Bob ' }
 
-      const ids = Object.keys(watchCollection({ bob }))
+      const ids = Object.keys(createCollection({ bob }))
 
       expect(ids).toEqual(['bob'])
     })
@@ -25,12 +25,12 @@ describe('watch-colletion', () => {
   describe('adding entries', () => {
     let cb = jest.fn()
     let bob = { name: 'Bob', age: 25 }
-    let users = watchCollection<User>()
+    let users = createCollection<User>()
 
     beforeEach(() => {
       cb = jest.fn()
       bob = { name: 'Bob', age: 25 }
-      users = watchCollection<User>()
+      users = createCollection<User>()
     })
 
     describe('using collection[id] = entry', () => {
@@ -53,12 +53,12 @@ describe('watch-colletion', () => {
   describe('removing entries', () => {
     let cb = jest.fn()
     let bob = { name: 'Bob', age: 25 }
-    let users = watchCollection<User>({ bob })
+    let users = createCollection<User>({ bob })
 
     beforeEach(() => {
       cb = jest.fn()
       bob = { name: 'Bob', age: 25 }
-      users = watchCollection<User>({ bob })
+      users = createCollection<User>({ bob })
     })
 
     describe('useing delete collection[id]', () => {
@@ -83,7 +83,7 @@ describe('watch-colletion', () => {
       const bob = { name: 'Bob', age: 26 }
       const bill = { name: 'bill', age: 17 }
       const betty = { name: 'Betty', age: 56 }
-      const users = watchCollection({
+      const users = createCollection({
         bill,
         bob,
         betty,
