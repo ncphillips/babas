@@ -46,7 +46,25 @@ user.name = 'Bill'
 user.age = 26 // Happy Birthday Bill, you're 26 years old!
 ```
 
+**Unsubscribe**
+
+```js
+import { watch } from 'babas'
+
+const user = watch({ name: 'Bob', age: 25 })
+
+const unsubscribe = user.subscribe(() => console.log('User updated'))
+
+user.name = 'Bill' // User updated
+
+unsubscribe()
+
+user.age = 26
+```
+
 ## `createCollection`
+
+**Creating Collections**
 
 ```js
 import { createCollection } from 'babas'
@@ -59,12 +77,14 @@ const bob = {
 const users = createCollection({ bob })
 ```
 
-**Subscribing**
+**Subscribing and Unsubscribe**
 
 ```js
-const unsubscribe = users.subscribe(() => {
-  console.log(`The guest list has changed.`)
+const unsubscribe = users.subscribe(users => {
+  console.log(`There are now ${users.toArray().length} guests`)
 })
+
+unsubscribe()
 ```
 
 **Adding Entries**
