@@ -25,8 +25,8 @@ jobs:
       - name: Version
         run: yarn release
 
+      - name: Push Tags & Changelog Updates
+        run: git push --follow-tags origin
+
       - name: Publish
         run: npm publish
-
-      - name: Push Tags & Changelog Updates
-        run: git push
