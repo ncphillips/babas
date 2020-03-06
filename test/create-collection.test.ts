@@ -86,6 +86,11 @@ describe('watch-colletion', () => {
 
         expect(listener).toHaveBeenCalled()
       })
+      it('does not call listener if entry does not exist', () => {
+        delete users['does-not-exist']
+
+        expect(listener).not.toHaveBeenCalled()
+      })
       it('removes the entry', () => {
         delete users['bob']
 

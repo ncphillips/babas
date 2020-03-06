@@ -39,16 +39,18 @@ export function createCollection<T>(entries: Entries<T> = {}): Collection<T> {
 
       subscribers.splice(index, 1)
     },
-    notifyChange(change: Change<T>) {
-      subscribers.forEach(({ listener }) => {
-        listener(watchableCollection, change)
-      })
-    },
+
     toArray(): T[] {
       return Object.keys(watchableCollection).map(
         id => watchableCollection[id]!
       )
     },
+  }
+
+  function notifyChange(change: Change<T>) {
+    subscribers.forEach(({ listener }) => {
+      listener(watchableCollection, change)
+    })
   }
 
   let watchableCollection = new Proxy<Collection<T>>(entries as Collection<T>, {
@@ -70,7 +72,7 @@ export function createCollection<T>(entries: Entries<T> = {}): Collection<T> {
 
       obj[prop] = value
 
-      collectionMethods.notifyChange({ change: 'set', entry: value, id: prop })
+      notifyChange({ change: 'set', entry: value, id: prop })
       return true
     },
     deleteProperty: function(obj, prop: string) {
@@ -81,8 +83,11 @@ export function createCollection<T>(entries: Entries<T> = {}): Collection<T> {
       }
 
       const entry = obj[prop]
-      delete obj[prop]
-      collectionMethods.notifyChange({ change: 'delete', entry, id: prop })
+
+      if (entry) {
+        delete obj[prop]
+        notifyChange({ change: 'delete', entry, id: prop })
+      }
       return true
     },
   })
