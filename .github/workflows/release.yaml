@@ -27,3 +27,6 @@ jobs:
 
       - name: Publish
         run: npm publish
+
+      - name: Push Tags & Changelog Updates
+        run: git push
