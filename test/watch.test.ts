@@ -6,7 +6,7 @@ interface User {
 }
 
 describe('watch', () => {
-  describe('without subscription', () => {
+  describe('without `subscribeTo`', () => {
     it('calls the subscriber on any change', () => {
       const cb = jest.fn()
       const user = watch<User>({ name: 'Bob', age: 25 })
@@ -16,8 +16,29 @@ describe('watch', () => {
 
       expect(cb).toHaveBeenCalled()
     })
+    it('passes the changed property', () => {
+      const cb = jest.fn()
+      const user = watch<User>({ name: 'Bob', age: 25 })
+      user.subscribe(cb)
+
+      user.name = 'Again'
+
+      expect(cb).toHaveBeenCalledWith(user, 'name')
+      expect(cb).not.toHaveBeenCalledWith(user, 'age')
+    })
+    it('passes both changed property', () => {
+      const cb = jest.fn()
+      const user = watch<User>({ name: 'Bob', age: 25 })
+      user.subscribe(cb)
+
+      user.name = 'Again'
+      user.age = 15
+
+      expect(cb).toHaveBeenCalledWith(user, 'name')
+      expect(cb).toHaveBeenCalledWith(user, 'age')
+    })
   })
-  describe('with `name` in the subcription', () => {
+  describe('with `name` in the `subscribeTo`', () => {
     it('calls the subscriber when `name` is changed', () => {
       const cb = jest.fn()
       const user = watch<User>({ name: 'Bob', age: 25 })

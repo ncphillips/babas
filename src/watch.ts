@@ -1,14 +1,26 @@
-import { Unsubscribe, SubscribeTo, Listener } from './subscriptions'
+import { Unsubscribe, SubscribeTo } from './subscriptions'
 
-export function watch<T extends object>(target: T): T & Sub<T> {
-  const subscribableTarget = target as T & Sub<T>
+export type Subscribable<T> = T & SubscribableMethods<T>
+
+export type Listener<T> = (t: T, prop: keyof SubscribeTo<T>) => void
+
+export interface SubscribableMethods<T> {
+  subscribe(cb: Listener<T>, subscription?: SubscribeTo<T>): Unsubscribe
+  unsubscribe(cb: Listener<T>): void
+}
+
+export function watch<T extends object>(target: T): Subscribable<T> {
+  const subscribableTarget = target as Subscribable<T>
 
   const subscribers: {
-    cb: Listener<T>
+    cb: Listener<Subscribable<T>>
     subscription: SubscribeTo<T>
   }[] = []
 
-  function subscribe(cb: Listener<T>, subscription: SubscribeTo<T>) {
+  function subscribe(
+    cb: Listener<Subscribable<T>>,
+    subscription: SubscribeTo<T>
+  ) {
     subscribers.push({
       cb,
       subscription,
@@ -17,21 +29,21 @@ export function watch<T extends object>(target: T): T & Sub<T> {
     return () => unsubscribe(cb)
   }
 
-  function unsubscribe(removeCB: Listener<T>) {
+  function unsubscribe(removeCB: Listener<Subscribable<T>>) {
     const index = subscribers.findIndex(({ cb }) => cb === removeCB)
     subscribers.splice(index, 1)
   }
 
-  function notifyChangeFor(prop: keyof (T & SubscribeTo<T>), obj: T) {
+  function notifyChangeFor(prop: keyof SubscribeTo<T>) {
     subscribers.forEach(({ subscription, cb }) => {
       if (!subscription || subscription[prop]) {
-        cb(obj)
+        cb(subscribable, prop)
       }
     })
   }
 
-  const p = new Proxy<T & Sub<T>>(subscribableTarget, {
-    get: function(obj, prop: keyof (T & SubscribeTo<T>)) {
+  const subscribable = new Proxy<Subscribable<T>>(subscribableTarget, {
+    get: function(obj, prop: keyof SubscribeTo<T>) {
       if (prop === 'subscribe') {
         return subscribe
       }
@@ -41,22 +53,17 @@ export function watch<T extends object>(target: T): T & Sub<T> {
 
       return obj[prop]
     },
-    set: function(obj, prop: keyof (T & SubscribeTo<T>), value) {
+    set: function(obj, prop: keyof SubscribeTo<T>, value) {
       if (prop === 'subscribe' || prop === 'unsubscribe') {
         return true
       }
 
       obj[prop] = value
-      notifyChangeFor(prop, { ...obj })
+      notifyChangeFor(prop)
 
       return true
     },
   })
 
-  return p
-}
-
-export interface Sub<T> {
-  subscribe(cb: Listener<T>, subscription?: SubscribeTo<T>): Unsubscribe
-  unsubscribe(cb: Listener<T>): void
+  return subscribable
 }
