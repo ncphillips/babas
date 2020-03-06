@@ -14,6 +14,11 @@ jobs:
       - name: Authorize NPM
         run: echo "//registry.npmjs.org/:_authToken=${{ secrets.NPM_AUTH_TOKEN}}" > ~/.npmrc
 
+      - name: Configure Git
+        run: |
+          git config --global user.email "ncphillips.19@gmail.com"
+          git config --global user.name "Nolan, but as a Bot"
+
       - name: Install & Build
         run: yarn
 
