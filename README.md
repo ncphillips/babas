@@ -129,6 +129,24 @@ delete users.polly
 delete users['bill']
 ```
 
+**Custom Collection Methods**
+
+```js
+import { createCollection } from 'babas'
+
+const users = createCollection({}, collection => ({
+  add(user) {
+    return (collection[user.id] = user)
+  },
+  remove(user) {
+    delete collection[user.id]
+  },
+}))
+
+user.add({ id: 'janet', name: 'Janet', age: 23 }
+user.add({ id: 'polly', name: 'Polly', age: 54 }
+```
+
 ## Thanks
 
 This project was bootstrapped with [TSDX](https://github.com/jaredpalmer/tsdx).
