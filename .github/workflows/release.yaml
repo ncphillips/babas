@@ -1,0 +1,24 @@
+name: Release
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v1
+
+      - name: Authorize NPM
+        run: echo "//registry.npmjs.org/:_authToken=${{ secrets.NPM_AUTH_TOKEN}}" > ~/.npmrc
+
+      - name: Install & Build
+        run: yarn
+
+      - name: Version
+        run: yarn release
+
+      - name: Publish
+        run: npm publish
