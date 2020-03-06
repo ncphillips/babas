@@ -18,6 +18,10 @@ const user = watch({ name: 'Bob', age: 25 })
 user.subscribe(user => {
   console.log('User updated')
 })
+
+user.name = 'Bill' // User updated
+
+user.age = 26 // User updated
 ```
 
 **Watching Specific Values**
