@@ -62,6 +62,24 @@ unsubscribe()
 user.age = 26
 ```
 
+**Unsubscribe Explicit**
+
+```js
+import { watch } from 'babas'
+
+const user = watch({ name: 'Bob', age: 25 })
+
+const onUserDidUpdate = () => console.log('User updated')
+
+user.subscribe(onUserDidUpdate)
+
+user.name = 'Bill' // User updated
+
+user.unsubscribe(onUserDidUpdate)
+
+user.age = 26
+```
+
 ## `createCollection`
 
 **Creating Collections**
@@ -95,7 +113,7 @@ unsubscribe()
 
 **Adding Entries**
 
-There are 3 ways to add entries:
+There are 2 ways to add entries:
 
 ```js
 user.janet = { name: 'Janet', age: 23 }

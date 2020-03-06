@@ -59,4 +59,22 @@ describe('watch', () => {
       expect(subscriber).not.toHaveBeenCalled()
     })
   })
+  describe('unsubscribe', () => {
+    it('removes listener', () => {
+      const user = watch({ name: 'Bob', age: 25 })
+
+      const onUserDidUpdate = jest.fn()
+
+      user.subscribe(onUserDidUpdate)
+
+      user.name = 'Bill' // User updated
+
+      user.unsubscribe(onUserDidUpdate)
+
+      user.age = 26
+
+      expect(onUserDidUpdate).toHaveBeenCalledWith(user, 'name')
+      expect(onUserDidUpdate).not.toHaveBeenCalledWith(user, 'age')
+    })
+  })
 })
