@@ -1,85 +1,81 @@
-interface Collection<T> {
-  [key: string]: T
+import { Unsubscribe, Listener } from './subscriptions'
+
+export interface Entries<T> {
+  [key: string]: T | undefined
 }
 
-export function watchCollection<T>(
-  collection: Collection<T> = {}
-): Collection<T> & Sub<T> {
-  const subscribers: {
-    cb: SubscriptionCallback<T>
-  }[] = []
-
-  const collectionMethods: { [key: string]: any } = {
-    subscribe(cb: SubscriptionCallback<T>) {
-      subscribers.push({
-        cb,
-      })
-
-      return () => collectionMethods.unsubscribe(cb)
-    },
-
-    unsubscribe(removeCB: SubscriptionCallback<T>) {
-      const index = subscribers.findIndex(({ cb }) => cb === removeCB)
-      subscribers.splice(index, 1)
-    },
-    notifyChange() {
-      subscribers.forEach(({ cb }) => {
-        cb()
-      })
-    },
-    toArray(): T[] {
-      return Object.keys(watchableCollection).map(id => watchableCollection[id])
-    },
-  }
-
-  let watchableCollection = new Proxy<Collection<T> & Sub<T>>(
-    collection as Collection<T> & Sub<T>,
-    {
-      get: function(obj, prop: string) {
-        const action = collectionMethods[prop]
-
-        if (action) {
-          return action
-        }
-
-        return obj[prop]
-      },
-      set: function(obj, prop: string, value) {
-        if (prop === 'subscribe' || prop === 'unsubscribe') {
-          return false
-        }
-
-        obj[prop] = value
-
-        collectionMethods.notifyChange()
-        return true
-      },
-      deleteProperty: function(obj, prop: string) {
-        if (prop === 'subscribe' || prop === 'unsubscribe') {
-          return false
-        }
-
-        delete obj[prop]
-        collectionMethods.notifyChange()
-        return true
-      },
-    }
-  )
-  return watchableCollection
-}
-
-export interface Sub<T> {
-  subscribe(
-    cb: SubscriptionCallback<T>,
-    subscription?: Subscription<T>
-  ): Unsubscribe
-  unsubscribe(cb: SubscriptionCallback<T>): void
+export interface CollectionMethods<T> {
+  subscribe(listener: Listener<Collection<T>>): Unsubscribe
+  unsubscribe(onUpdate: Listener<Collection<T>>): void
   toArray(): T[]
 }
 
-// @ts-ignore
-export type SubscriptionCallback<T> = () => void
-export type Unsubscribe = () => void
-export type Subscription<T> = {
-  [P in keyof T]?: boolean
+export type Collection<T> = Entries<T> & CollectionMethods<Entries<T>>
+
+export function watchCollection<T>(entries: Entries<T> = {}): Collection<T> {
+  const subscribers: {
+    listener: Listener<Collection<T>>
+  }[] = []
+
+  const collectionMethods: { [key: string]: any } = {
+    subscribe(listener: Listener<Collection<T>>) {
+      subscribers.push({
+        listener: listener,
+      })
+
+      return () => collectionMethods.unsubscribe(listener)
+    },
+
+    unsubscribe(listener: Listener<Collection<T>>) {
+      const index = subscribers.findIndex(sub => sub.listener === listener)
+
+      subscribers.splice(index, 1)
+    },
+    notifyChange() {
+      subscribers.forEach(({ listener }) => {
+        listener(watchableCollection)
+      })
+    },
+    toArray(): T[] {
+      return Object.keys(watchableCollection).map(
+        id => watchableCollection[id]!
+      )
+    },
+  }
+
+  let watchableCollection = new Proxy<Collection<T>>(entries as Collection<T>, {
+    get: function(obj, prop: string) {
+      const action = collectionMethods[prop]
+
+      if (action) {
+        return action
+      }
+
+      return obj[prop]
+    },
+    set: function(obj, prop: string, value) {
+      const action = collectionMethods[prop]
+
+      if (action) {
+        return false
+      }
+
+      obj[prop] = value
+
+      collectionMethods.notifyChange()
+      return true
+    },
+    deleteProperty: function(obj, prop: string) {
+      const action = collectionMethods[prop]
+
+      if (action) {
+        return false
+      }
+
+      delete obj[prop]
+      collectionMethods.notifyChange()
+      return true
+    },
+  })
+  return watchableCollection
 }

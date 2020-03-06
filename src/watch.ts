@@ -1,15 +1,14 @@
+import { Unsubscribe, SubscribeTo, Listener } from './subscriptions'
+
 export function watch<T extends object>(target: T): T & Sub<T> {
   const subscribableTarget = target as T & Sub<T>
 
   const subscribers: {
-    cb: SubscriptionCallback<T>
-    subscription: Subscription<T>
+    cb: Listener<T>
+    subscription: SubscribeTo<T>
   }[] = []
 
-  function subscribe(
-    cb: SubscriptionCallback<T>,
-    subscription: Subscription<T>
-  ) {
+  function subscribe(cb: Listener<T>, subscription: SubscribeTo<T>) {
     subscribers.push({
       cb,
       subscription,
@@ -18,12 +17,12 @@ export function watch<T extends object>(target: T): T & Sub<T> {
     return () => unsubscribe(cb)
   }
 
-  function unsubscribe(removeCB: SubscriptionCallback<T>) {
+  function unsubscribe(removeCB: Listener<T>) {
     const index = subscribers.findIndex(({ cb }) => cb === removeCB)
     subscribers.splice(index, 1)
   }
 
-  function notifyChangeFor(prop: keyof (T & Subscription<T>), obj: T) {
+  function notifyChangeFor(prop: keyof (T & SubscribeTo<T>), obj: T) {
     subscribers.forEach(({ subscription, cb }) => {
       if (!subscription || subscription[prop]) {
         cb(obj)
@@ -32,7 +31,7 @@ export function watch<T extends object>(target: T): T & Sub<T> {
   }
 
   const p = new Proxy<T & Sub<T>>(subscribableTarget, {
-    get: function(obj, prop: keyof (T & Subscription<T>)) {
+    get: function(obj, prop: keyof (T & SubscribeTo<T>)) {
       if (prop === 'subscribe') {
         return subscribe
       }
@@ -42,7 +41,7 @@ export function watch<T extends object>(target: T): T & Sub<T> {
 
       return obj[prop]
     },
-    set: function(obj, prop: keyof (T & Subscription<T>), value) {
+    set: function(obj, prop: keyof (T & SubscribeTo<T>), value) {
       if (prop === 'subscribe' || prop === 'unsubscribe') {
         return true
       }
@@ -58,15 +57,6 @@ export function watch<T extends object>(target: T): T & Sub<T> {
 }
 
 export interface Sub<T> {
-  subscribe(
-    cb: SubscriptionCallback<T>,
-    subscription?: Subscription<T>
-  ): Unsubscribe
-  unsubscribe(cb: SubscriptionCallback<T>): void
-}
-
-export type SubscriptionCallback<T> = (t: T) => void
-export type Unsubscribe = () => void
-export type Subscription<T> = {
-  [P in keyof T]?: boolean
+  subscribe(cb: Listener<T>, subscription?: SubscribeTo<T>): Unsubscribe
+  unsubscribe(cb: Listener<T>): void
 }
