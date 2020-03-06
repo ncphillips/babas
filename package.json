@@ -1,5 +1,5 @@
 {
-  "version": "0.2.3",
+  "version": "0.2.4",
   "standard-version": {
     "releaseCommitMessageFormat": "chore(release): {{currentTag}} skip-ci"
   },
