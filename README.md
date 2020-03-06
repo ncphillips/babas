@@ -80,7 +80,13 @@ const users = createCollection({ bob })
 **Subscribing and Unsubscribe**
 
 ```js
-const unsubscribe = users.subscribe(users => {
+const unsubscribe = users.subscribe((users, { change, entry }) => {
+  if (change === 'set') {
+    console.log(`${entry.name} can come!`)
+  } else {
+    console.log(`${entry.name} can no longer attend :(`)
+  }
+
   console.log(`There are now ${users.toArray().length} guests`)
 })
 
