@@ -8,6 +8,7 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    if: "!contains(github.event.head_commit.message, 'skip-ci')"
     steps:
       - uses: actions/checkout@v1
 
@@ -26,7 +27,7 @@ jobs:
         run: yarn release
 
       - name: Push Tags & Changelog Updates
-        run: git push --follow-tags origin
+        run: git push --follow-tags origin HEAD:master
 
       - name: Publish
         run: npm publish
