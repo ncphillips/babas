@@ -1,40 +1,40 @@
 import { Unsubscribe } from './subscriptions'
 
-export type CollectionListener<T> = (
-  colletion: Collection<T>,
-  change: Change<T>
+export type CollectionListener<Entry> = (
+  colletion: Collection<Entry>,
+  change: Change<Entry>
 ) => void
 
-export interface Entries<T> {
-  [key: string]: T | undefined
+export interface Entries<Entry> {
+  [key: string]: Entry | undefined
 }
 
-export interface CollectionMethods<T> {
-  subscribe(listener: CollectionListener<Collection<T>>): Unsubscribe
-  unsubscribe(onUpdate: CollectionListener<Collection<T>>): void
-  toArray(): T[]
+export interface CollectionMethods<Entry> {
+  subscribe(listener: CollectionListener<Collection<Entry>>): Unsubscribe
+  unsubscribe(onUpdate: CollectionListener<Collection<Entry>>): void
+  toArray(): Entry[]
 }
 
-export type Collection<T, M = {}> = Entries<T> &
-  CollectionMethods<Entries<T>> &
-  M
+export type Collection<Entry, Methods = {}> = Entries<Entry> &
+  CollectionMethods<Entry> &
+  Methods
 
-export interface Change<T> {
+export interface Change<Entry> {
   id: string
   change: 'set' | 'delete'
-  entry: T
+  entry: Entry
 }
 
-export function createCollection<T, M = {}>(
-  entries: Entries<T> = {},
-  methods?: (c: Collection<T, M>) => M
-): Collection<T, M> {
+export function createCollection<Entry, Methods = {}>(
+  entries: Entries<Entry> = {},
+  methods?: (c: Collection<Entry, Methods>) => Methods
+): Collection<Entry, Methods> {
   const subscribers: {
-    listener: CollectionListener<T>
+    listener: CollectionListener<Entry>
   }[] = []
 
-  let watchableCollection = new Proxy<Collection<T, M>>(
-    entries as Collection<T, M>,
+  let watchableCollection = new Proxy<Collection<Entry, Methods>>(
+    entries as Collection<Entry, Methods>,
     {
       get: function(obj, prop: string) {
         const action = collectionMethods[prop]
@@ -77,7 +77,7 @@ export function createCollection<T, M = {}>(
   )
 
   const collectionMethods: { [key: string]: any } = {
-    subscribe(listener: CollectionListener<T>) {
+    subscribe(listener: CollectionListener<Entry>) {
       subscribers.push({
         listener,
       })
@@ -85,13 +85,13 @@ export function createCollection<T, M = {}>(
       return () => collectionMethods.unsubscribe(listener)
     },
 
-    unsubscribe(listener: CollectionListener<T>) {
+    unsubscribe(listener: CollectionListener<Entry>) {
       const index = subscribers.findIndex(sub => sub.listener === listener)
 
       subscribers.splice(index, 1)
     },
 
-    toArray(): T[] {
+    toArray(): Entry[] {
       return Object.keys(watchableCollection).map(
         id => watchableCollection[id]!
       )
@@ -99,7 +99,7 @@ export function createCollection<T, M = {}>(
     ...(methods ? methods(watchableCollection) : {}),
   }
 
-  function notifyChange(change: Change<T>) {
+  function notifyChange(change: Change<Entry>) {
     subscribers.forEach(({ listener }) => {
       listener(watchableCollection, change)
     })
