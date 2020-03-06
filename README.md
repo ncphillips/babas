@@ -44,17 +44,17 @@ user.name = 'Bill'
 user.age = 26 // Happy Birthday Bill, you're 26 years old!
 ```
 
-### `watchCollection`
+### `createCollection`
 
 ```js
-import { watchCollection } from 'babas'
+import { createCollection } from 'babas'
 
 const bob = {
   name: 'Bob',
   age: 25,
 }
 
-const users = watchCollection({ bob })
+const users = createCollection({ bob })
 ```
 
 **Subscribing**
