@@ -15,13 +15,13 @@ import { watch } from 'babas'
 
 const user = watch({ name: 'Bob', age: 25 })
 
-user.subscribe(user => {
-  console.log('User updated')
+user.subscribe((user, propName) => {
+  console.log(`Updated ${propName} for user.`)
 })
 
-user.name = 'Bill' // User updated
+user.name = 'Bill' // User name updated
 
-user.age = 26 // User updated
+user.age = 26 // User age updated
 ```
 
 **Watching Specific Values**
