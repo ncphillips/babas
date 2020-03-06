@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.2.4](https://github.com/ncphillips/babas/compare/v0.2.3...v0.2.4) (2020-03-06)
+
+
+### Features
+
+* **createCollection:** provide additional methods for your collection ([d24e707](https://github.com/ncphillips/babas/commit/d24e70701eaf19aac2f829b6535ded93a6878686))
+
 ### [0.2.3](https://github.com/ncphillips/babas/compare/v0.2.2...v0.2.3) (2020-03-06)
 
 
