@@ -2,6 +2,19 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.2.5](https://github.com/ncphillips/babas/compare/v0.2.2...v0.2.5) (2020-03-06)
+
+
+### Features
+
+* **createCollection:** provide additional methods for your collection ([2345244](https://github.com/ncphillips/babas/commit/2345244c356e2e905d2f7b5060c5b8e984ca24a1))
+* export all types ([65f8d15](https://github.com/ncphillips/babas/commit/65f8d159fc85672e95c750937fbddd4eac91742e))
+
+
+### Bug Fixes
+
+* Entry & Method interfaces ([ee96100](https://github.com/ncphillips/babas/commit/ee96100762af970caf03fe573cb6607b45af23b9))
+
 ### [0.2.4](https://github.com/ncphillips/babas/compare/v0.2.3...v0.2.4) (2020-03-06)
 
 
