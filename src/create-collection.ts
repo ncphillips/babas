@@ -25,9 +25,13 @@ export interface Change<Entry> {
   entry: Entry
 }
 
+export type CollectionMethodsCreator<Entry, Methods> = (
+  c: Collection<Entry, Methods>
+) => Methods
+
 export function createCollection<Entry, Methods = {}>(
   entries: Entries<Entry> = {},
-  methods?: (c: Collection<Entry, Methods>) => Methods
+  methods?: CollectionMethodsCreator<Entry, Methods>
 ): Collection<Entry, Methods> {
   const subscribers: {
     listener: CollectionListener<Entry>
